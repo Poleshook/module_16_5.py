@@ -21,11 +21,12 @@ async def root(request: Request) -> HTMLResponse:
     return templates.TemplateResponse("users.html", {"request": request, "users": users})
 
 
-@app.get("/user/{user_id}")
-async def get_user(request: Request, user_id: Annotated[int, Path(ge=1, le=100)]) -> HTMLResponse:
-    if user_id < 0 or user_id >= len(users):
+@app.get(path="/user/{user_id}")
+async def get_user(request: Request, user_id: int) -> HTMLResponse:
+    try:
+        return templates.TemplateResponse("users.html", {"request": request, "user": users[user_id]})
+    except IndexError:
         raise HTTPException(status_code=404, detail="User not found")
-    return templates.TemplateResponse("users.html", {"request": request, "user": users[user_id]})
 
 
 @app.post("/user/{username}/{age}")
